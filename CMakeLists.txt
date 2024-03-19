@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.6)
-project(functional-dag LANGUAGES CXX )
+project(functional-dag LANGUAGES CXX VERSION 0.5)
 
 #############################################
 ####### Setting up compiler options #########
 #############################################
 include(FindPkgConfig REQUIRED)
-include(CPack)
+
+if (NOT DEFINED ARCHITECTURE_ID)
+  set (ARCHITECTURE_ID "apple")
+endif ()
 
 set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -103,8 +106,6 @@ install(EXPORT dag_install
 ########################################
 ##### Packaging specifications #########
 ########################################
-set(CPACK_GENERATOR "DEB")
-
 set(CPACK_PACKAGE_DIRECTORY ${PROJECT_BINARY_DIR}/package)
 set(CPACK_SOURCE_IGNORE_FILES .git/ .github/ .vscode/ .mypy_cache/ _CPack_Packages/
 ${CMAKE_BINARY_DIR}/ ${PROJECT_BINARY_DIR}/
@@ -112,14 +113,12 @@ ${CMAKE_BINARY_DIR}/ ${PROJECT_BINARY_DIR}/
 
 set(CPACK_PACKAGE_CONTACT "ndepalma@alum.mit.edu")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Nick DePalma <${CPACK_PACKAGE_CONTACT}>")
-
+set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${ARCHITECTURE_ID}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A directed acyclic graph that runs a function on each node."
     CACHE STRING "Many applications of vision require a single source (root) node that captures data from a source and distributes that data across nodes.")
 
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME}
     CACHE STRING "Functional DAG is a DAG that implements lambdas at each point on the graph.")
-
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
-set(CPACK_VERBATIM_VARIABLES TRUE)
-
+set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${CMAKE_PROJECT_VERSION}.${ARCHITECTURE_ID})
+    
 include(CPack) 
